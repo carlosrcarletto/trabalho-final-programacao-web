@@ -1,13 +1,20 @@
 const { defineConfig } = require('cypress')
 
 module.exports = defineConfig({
-  reporter: 'cypress-mochawesome-reporter',
+  // HTML (Mochawesome) para leitura humana + JUnit XML para o CI
+  reporter: 'cypress-multi-reporters',
   reporterOptions: {
-    reportDir: 'cypress/reports',
-    reportPageTitle: 'Automation Exercise - Relatório de Testes',
-    charts: true,
-    embeddedScreenshots: true,
-    inlineAssets: true,
+    reporterEnabled: 'cypress-mochawesome-reporter, mocha-junit-reporter',
+    cypressMochawesomeReporterReporterOptions: {
+      reportDir: 'cypress/reports',
+      reportPageTitle: 'Automation Exercise - Relatório de Testes',
+      charts: true,
+      embeddedScreenshots: true,
+      inlineAssets: true,
+    },
+    mochaJunitReporterReporterOptions: {
+      mochaFile: 'cypress/results/junit-[hash].xml',
+    },
   },
   e2e: {
     baseUrl: 'https://automationexercise.com',

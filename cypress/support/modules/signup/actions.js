@@ -8,6 +8,7 @@ export function start(user) {
   cy.get(signup.newUserName).type(user.name)
   cy.get(signup.newUserEmail).type(user.email)
   cy.get(signup.newUserButton).click()
+  cy.location('pathname').should('eq', '/signup')
 }
 
 export function assertAccountInfoVisible() {
@@ -42,4 +43,5 @@ export function fillAddressInfo({ address }) {
 
 export function submit() {
   cy.get(signup.createAccountButton).click()
+  cy.location('pathname').should('eq', '/account_created')
 }

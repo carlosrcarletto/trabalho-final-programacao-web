@@ -63,15 +63,22 @@ npm install
 npm run cy:open    # modo interativo
 npm run cy:run     # headless (Electron)
 npm test           # headless no Chrome
+npm run cy:report  # abre o relatório HTML da última execução (macOS)
 ```
 
 > **Rodando pelo terminal integrado do VS Code?** Se aparecer o erro `bad option: --no-sandbox`, rode `unset ELECTRON_RUN_AS_NODE` antes do comando.
 
 ## Relatório
 
-O relatório HTML é gerado pelo **cypress-mochawesome-reporter** em `cypress/reports/index.html`. Quando há falha, ele traz screenshots embutidos.
+Cada execução gera dois relatórios, configurados com **cypress-multi-reporters**:
+
+- **HTML** (`cypress/reports/index.html`), do **cypress-mochawesome-reporter**: um único arquivo com gráficos e, quando há falha, screenshots embutidos.
+- **JUnit XML** (`cypress/results/*.xml`), do **mocha-junit-reporter**: usado pelo CI para mostrar os resultados no GitHub.
 
 ## Integração contínua
 
-O workflow `.github/workflows/cypress.yml` roda os testes no Chrome em todo push e pull request e publica o relatório como artefato da execução.
+O workflow `.github/workflows/cypress.yml` roda os testes no Chrome em todo push e pull request. Em seguida, mesmo quando há falha:
+
+- publica cada cenário na aba **Checks** ("Resultados Cypress"), com a mensagem de erro dos que falharam;
+- anexa o relatório HTML como artefato `cypress-report`, guardado por 14 dias.
 # trabalho-final-programacao-web

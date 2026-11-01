@@ -3,6 +3,7 @@ import { account } from './elements'
 export function continueAfterCreated() {
   cy.get(account.accountCreated).should('be.visible')
   cy.get(account.continueButton).click()
+  cy.location('pathname').should('eq', '/')
 }
 
 export function assertLoggedInAs(name) {

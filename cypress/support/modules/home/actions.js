@@ -11,4 +11,5 @@ export function assertVisible() {
 
 export function goToSignupLogin() {
   cy.get(home.signupLoginLink).click()
+  cy.location('pathname').should('eq', '/login')
 }

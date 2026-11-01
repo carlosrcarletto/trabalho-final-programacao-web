@@ -5,6 +5,10 @@ on:
   pull_request:
   workflow_dispatch:
 
+permissions:
+  contents: read
+  checks: write
+
 jobs:
   e2e:
     runs-on: ubuntu-latest
@@ -15,9 +19,19 @@ jobs:
         with:
           browser: chrome
 
+      - name: Publicar resultados no Checks
+        if: always()
+        uses: mikepenz/action-junit-report@v5
+        with:
+          report_paths: cypress/results/*.xml
+          check_name: Resultados Cypress
+          include_passed: true
+
       - name: Publicar relatório
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: cypress-report
           path: cypress/reports
+          retention-days: 14
+          if-no-files-found: ignore
