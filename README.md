@@ -74,3 +74,4 @@ O relatório HTML é gerado pelo **cypress-mochawesome-reporter** em `cypress/re
 ## Integração contínua
 
 O workflow `.github/workflows/cypress.yml` roda os testes no Chrome em todo push e pull request e publica o relatório como artefato da execução.
+# trabalho-final-programacao-web
