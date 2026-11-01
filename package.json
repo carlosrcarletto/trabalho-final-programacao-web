@@ -8,10 +8,12 @@
     "test": "cypress run --browser chrome",
     "cy:open": "cypress open",
     "cy:run": "cypress run",
-    "cy:report": "open cypress/reports/index.html"
+    "cy:report": "open cypress/reports/index.html",
+    "allure:open": "allure generate allure-results --clean --open"
   },
   "devDependencies": {
     "@faker-js/faker": "^10.6.0",
+    "allure": "^3.22.1",
     "allure-cypress": "^3.14.0",
     "cypress": "^16.2.1",
     "cypress-mochawesome-reporter": "^5.0.0",

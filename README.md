@@ -64,6 +64,7 @@ npm run cy:open    # modo interativo
 npm run cy:run     # headless (Electron)
 npm test           # headless no Chrome
 npm run cy:report  # abre o relatório HTML da última execução (macOS)
+npm run allure:open # gera e abre o relatório Allure
 ```
 
 > **Rodando pelo terminal integrado do VS Code?** Se aparecer o erro `bad option: --no-sandbox`, rode `unset ELECTRON_RUN_AS_NODE` antes do comando.
@@ -88,11 +89,13 @@ O workflow `.github/workflows/cypress.yml` roda os testes no Chrome em todo push
 
 ### Histórico de execuções (Allure)
 
-A cada execução, o relatório anterior é recuperado da branch `gh-pages`, e o novo relatório já inclui as execuções passadas. As últimas 30 ficam guardadas. Lá é possível ver:
+O relatório é gerado pelo **Allure 3** (pacote `allure`, Node puro, sem Docker nem Java), configurado em `allurerc.mjs`. O histórico fica no arquivo `history.jsonl`, que tem uma linha por execução e guarda as últimas 30. A cada execução no CI:
 
-- **Trend**, na página inicial: gráfico de quantos cenários passaram ou falharam em cada execução;
-- **History**, na aba de cada cenário: quantas vezes aquele cenário passou ou falhou e o percentual de sucesso;
-- **Flaky**: cenários que alternam entre passar e falhar.
+1. o `history.jsonl` publicado é recuperado da branch `gh-pages`;
+2. o relatório novo é gerado juntando esse histórico com o resultado atual;
+3. o relatório e o `history.jsonl` atualizado são publicados de volta na `gh-pages`.
+
+No relatório, cada cenário tem a aba **History**, com o resultado de cada execução anterior: quantas vezes passou ou falhou. Os gráficos mostram a tendência de execuções aprovadas e reprovadas, e os cenários que alternam entre passar e falhar aparecem marcados como **flaky**.
 
 **Configuração única:** depois do primeiro push na branch principal, acesse *Settings → Pages* e, em *Source*, escolha **Deploy from a branch → `gh-pages` / `(root)`**.
 # trabalho-final-programacao-web

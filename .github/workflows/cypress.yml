@@ -44,23 +44,22 @@ jobs:
           retention-days: 14
           if-no-files-found: ignore
 
-      # Allure: baixa o histórico anterior, gera o relatório novo e publica no GitHub Pages
+      # Allure: recupera o histórico publicado, gera o relatório novo e publica no GitHub Pages
       - name: Baixar histórico do Allure
         if: always() && env.PUBLISH_ALLURE == 'true'
-        uses: actions/checkout@v4
-        continue-on-error: true # na primeira execução a branch gh-pages ainda não existe
-        with:
-          ref: gh-pages
-          path: gh-pages
+        run: |
+          mkdir -p allure-history
+          if git fetch --depth=1 origin gh-pages; then
+            git show origin/gh-pages:history.jsonl > allure-history/history.jsonl || rm -f allure-history/history.jsonl
+          else
+            echo "Primeira execução: ainda não há histórico publicado"
+          fi
 
       - name: Gerar relatório Allure com histórico
         if: always() && env.PUBLISH_ALLURE == 'true'
-        uses: simple-elf/allure-report-action@v1.12
-        with:
-          allure_results: allure-results
-          allure_history: allure-history
-          gh_pages: gh-pages
-          keep_reports: 30
+        run: |
+          npx allure generate allure-results --clean
+          cp allure-history/history.jsonl allure-report/
 
       - name: Publicar Allure no GitHub Pages
         if: always() && env.PUBLISH_ALLURE == 'true'
@@ -68,4 +67,4 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: gh-pages
-          publish_dir: allure-history
+          publish_dir: allure-report
