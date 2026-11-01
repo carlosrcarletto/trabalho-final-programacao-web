@@ -6,10 +6,10 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write # publicar o Allure na branch gh-pages
+  contents: write # gravar o histórico na branch test-history
   checks: write
 
-# Evita duas execuções gravando o histórico do Allure ao mesmo tempo
+# Evita duas execuções gravando o histórico ao mesmo tempo
 concurrency:
   group: cypress-${{ github.ref }}
   cancel-in-progress: false
@@ -18,8 +18,8 @@ jobs:
   e2e:
     runs-on: ubuntu-latest
     env:
-      # O histórico só é publicado a partir da branch principal
-      PUBLISH_ALLURE: ${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
+      # O histórico só é gravado a partir da branch principal
+      SAVE_HISTORY: ${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
     steps:
       - uses: actions/checkout@v4
 
@@ -44,27 +44,23 @@ jobs:
           retention-days: 14
           if-no-files-found: ignore
 
-      # Allure: recupera o histórico publicado, gera o relatório novo e publica no GitHub Pages
-      - name: Baixar histórico do Allure
-        if: always() && env.PUBLISH_ALLURE == 'true'
+      # Quadro 🟢/🔴 por cenário no resumo da execução, com o histórico guardado na branch test-history
+      - name: Quadro de histórico dos cenários
+        if: always()
         run: |
-          mkdir -p allure-history
-          if git fetch --depth=1 origin gh-pages; then
-            git show origin/gh-pages:history.jsonl > allure-history/history.jsonl || rm -f allure-history/history.jsonl
+          mkdir -p test-history
+          if git fetch --depth=1 origin test-history; then
+            git show origin/test-history:history.json > test-history/history.json || rm -f test-history/history.json
           else
-            echo "Primeira execução: ainda não há histórico publicado"
+            echo "Primeira execução: ainda não há histórico salvo"
           fi
+          node scripts/test-history.js cypress/results test-history/history.json >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Gerar relatório Allure com histórico
-        if: always() && env.PUBLISH_ALLURE == 'true'
-        run: |
-          npx allure generate allure-results --clean
-          cp allure-history/history.jsonl allure-report/
-
-      - name: Publicar Allure no GitHub Pages
-        if: always() && env.PUBLISH_ALLURE == 'true'
+      - name: Salvar histórico dos cenários
+        if: always() && env.SAVE_HISTORY == 'true'
         uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: gh-pages
-          publish_dir: allure-report
+          publish_branch: test-history
+          publish_dir: test-history
+          commit_message: "histórico da execução #${{ github.run_number }}"

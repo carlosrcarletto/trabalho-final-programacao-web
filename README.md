@@ -42,6 +42,8 @@ cypress/
 │       └── account/                # conta criada, usuário logado, exclusão
 │           ├── elements.js         # seletores centralizados do módulo
 │           └── actions.js          # App Actions (funções exportadas)
+scripts/
+└── test-history.js                 # quadro 🟢/🔴 de histórico para o CI
 cypress.config.js
 .github/workflows/cypress.yml
 ```
@@ -64,20 +66,16 @@ npm run cy:open    # modo interativo
 npm run cy:run     # headless (Electron)
 npm test           # headless no Chrome
 npm run cy:report  # abre o relatório HTML da última execução (macOS)
-npm run allure:open # gera e abre o relatório Allure
 ```
 
 > **Rodando pelo terminal integrado do VS Code?** Se aparecer o erro `bad option: --no-sandbox`, rode `unset ELECTRON_RUN_AS_NODE` antes do comando.
 
 ## Relatório
 
-Cada execução gera três relatórios:
+Cada execução gera dois relatórios, configurados com **cypress-multi-reporters**:
 
 - **HTML** (`cypress/reports/index.html`), do **cypress-mochawesome-reporter**: um único arquivo com gráficos e, quando há falha, screenshots embutidos.
-- **JUnit XML** (`cypress/results/*.xml`), do **mocha-junit-reporter**: usado pelo CI para mostrar os resultados no GitHub.
-- **Allure** (`allure-results/`), do **allure-cypress**: no CI, vira um relatório com **histórico por cenário**.
-
-Os dois primeiros saem juntos via **cypress-multi-reporters**. O Allure é um plugin à parte, e o **cypress-on-fix** permite que ele e o Mochawesome usem os mesmos eventos do Cypress sem um sobrescrever o outro.
+- **JUnit XML** (`cypress/results/*.xml`), do **mocha-junit-reporter**: usado pelo CI para mostrar os resultados no GitHub e montar o quadro de histórico.
 
 ## Integração contínua
 
@@ -85,17 +83,18 @@ O workflow `.github/workflows/cypress.yml` roda os testes no Chrome em todo push
 
 - publica cada cenário na aba **Checks** ("Resultados Cypress"), com a mensagem de erro dos que falharam;
 - anexa o relatório HTML como artefato `cypress-report`, guardado por 14 dias;
-- na branch principal, gera o **relatório Allure com histórico** e publica no GitHub Pages: `https://carlosrcarletto.github.io/trabalho-final-programacao-web/`.
+- mostra o **quadro de histórico dos cenários** no resumo da execução.
 
-### Histórico de execuções (Allure)
+### Quadro de histórico dos cenários
 
-O relatório é gerado pelo **Allure 3** (pacote `allure`, Node puro, sem Docker nem Java), configurado em `allurerc.mjs`. O histórico fica no arquivo `history.jsonl`, que tem uma linha por execução e guarda as últimas 30. A cada execução no CI:
+Ao abrir uma execução da esteira no GitHub, o resumo (*Summary*) mostra uma tabela com uma linha por cenário e uma coluna por execução, das últimas 10. A mais recente fica à direita, e o número de cada coluna é um link para a execução correspondente:
 
-1. o `history.jsonl` publicado é recuperado da branch `gh-pages`;
-2. o relatório novo é gerado juntando esse histórico com o resultado atual;
-3. o relatório e o `history.jsonl` atualizado são publicados de volta na `gh-pages`.
+| Cenário | #1 | #2 | #3 | ✅ | ❌ |
+|---|:-:|:-:|:-:|:-:|:-:|
+| 4. Clicar no botão 'Signup / Login' | 🟢 | 🟢 | 🟢 | 3 | 0 |
+| 5. Verificar que 'New User Signup!' está visível | 🟢 | 🔴 | 🟢 | 2 | 1 |
 
-No relatório, cada cenário tem a aba **History**, com o resultado de cada execução anterior: quantas vezes passou ou falhou. Os gráficos mostram a tendência de execuções aprovadas e reprovadas, e os cenários que alternam entre passar e falhar aparecem marcados como **flaky**.
+🟢 passou · 🔴 falhou · ⚪ não executado
 
-**Configuração única:** depois do primeiro push na branch principal, acesse *Settings → Pages* e, em *Source*, escolha **Deploy from a branch → `gh-pages` / `(root)`**.
+O quadro é montado pelo script `scripts/test-history.js`, que lê o JUnit da execução atual e junta ao arquivo `history.json`. Esse arquivo fica guardado na branch `test-history` e só é atualizado por execuções da branch principal. Execuções em outras branches mostram o quadro, mas não gravam no histórico.
 # trabalho-final-programacao-web

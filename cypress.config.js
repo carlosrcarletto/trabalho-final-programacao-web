@@ -1,5 +1,4 @@
 const { defineConfig } = require('cypress')
-const { allureCypress } = require('allure-cypress/reporter')
 
 module.exports = defineConfig({
   // HTML (Mochawesome) para leitura humana + JUnit XML para o CI
@@ -32,11 +31,8 @@ module.exports = defineConfig({
       '*googletagmanager.com',
       '*google-analytics.com',
     ],
-    setupNodeEvents(cypressOn, config) {
-      // Permite que Mochawesome e Allure registrem os mesmos eventos sem um sobrescrever o outro
-      const on = require('cypress-on-fix')(cypressOn)
+    setupNodeEvents(on, config) {
       require('cypress-mochawesome-reporter/plugin')(on)
-      allureCypress(on, config)
       return config
     },
   },
