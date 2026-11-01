@@ -1,0 +1,28 @@
+export const signup = {
+  newUserForm: '.signup-form',
+  newUserName: '[data-qa="signup-name"]',
+  newUserEmail: '[data-qa="signup-email"]',
+  newUserButton: '[data-qa="signup-button"]',
+
+  accountInfoTitle: '.login-form h2.title',
+  title: (title) => (title === 'Mr' ? '#id_gender1' : '#id_gender2'),
+  name: '[data-qa="name"]',
+  email: '[data-qa="email"]',
+  password: '[data-qa="password"]',
+  birthDay: '[data-qa="days"]',
+  birthMonth: '[data-qa="months"]',
+  birthYear: '[data-qa="years"]',
+  newsletter: '#newsletter',
+
+  firstName: '[data-qa="first_name"]',
+  lastName: '[data-qa="last_name"]',
+  company: '[data-qa="company"]',
+  address1: '[data-qa="address"]',
+  address2: '[data-qa="address2"]',
+  country: '[data-qa="country"]',
+  state: '[data-qa="state"]',
+  city: '[data-qa="city"]',
+  zipcode: '[data-qa="zipcode"]',
+  mobileNumber: '[data-qa="mobile_number"]',
+  createAccountButton: '[data-qa="create-account"]',
+}

@@ -1,0 +1,32 @@
+const { defineConfig } = require('cypress')
+
+module.exports = defineConfig({
+  reporter: 'cypress-mochawesome-reporter',
+  reporterOptions: {
+    reportDir: 'cypress/reports',
+    reportPageTitle: 'Automation Exercise - Relatório de Testes',
+    charts: true,
+    embeddedScreenshots: true,
+    inlineAssets: true,
+  },
+  e2e: {
+    baseUrl: 'https://automationexercise.com',
+    viewportWidth: 1366,
+    viewportHeight: 768,
+    defaultCommandTimeout: 10000,
+    video: false,
+    // Bloqueia anúncios que poluem/travam as páginas do site
+    blockHosts: [
+      '*googlesyndication.com',
+      '*doubleclick.net',
+      '*googleadservices.com',
+      '*adservice.google.com',
+      '*googletagmanager.com',
+      '*google-analytics.com',
+    ],
+    setupNodeEvents(on, config) {
+      require('cypress-mochawesome-reporter/plugin')(on)
+      return config
+    },
+  },
+})
