@@ -6,12 +6,20 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write # publicar o Allure na branch gh-pages
   checks: write
+
+# Evita duas execuções gravando o histórico do Allure ao mesmo tempo
+concurrency:
+  group: cypress-${{ github.ref }}
+  cancel-in-progress: false
 
 jobs:
   e2e:
     runs-on: ubuntu-latest
+    env:
+      # O histórico só é publicado a partir da branch principal
+      PUBLISH_ALLURE: ${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
     steps:
       - uses: actions/checkout@v4
 
@@ -35,3 +43,29 @@ jobs:
           path: cypress/reports
           retention-days: 14
           if-no-files-found: ignore
+
+      # Allure: baixa o histórico anterior, gera o relatório novo e publica no GitHub Pages
+      - name: Baixar histórico do Allure
+        if: always() && env.PUBLISH_ALLURE == 'true'
+        uses: actions/checkout@v4
+        continue-on-error: true # na primeira execução a branch gh-pages ainda não existe
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      - name: Gerar relatório Allure com histórico
+        if: always() && env.PUBLISH_ALLURE == 'true'
+        uses: simple-elf/allure-report-action@v1.12
+        with:
+          allure_results: allure-results
+          allure_history: allure-history
+          gh_pages: gh-pages
+          keep_reports: 30
+
+      - name: Publicar Allure no GitHub Pages
+        if: always() && env.PUBLISH_ALLURE == 'true'
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: gh-pages
+          publish_dir: allure-history

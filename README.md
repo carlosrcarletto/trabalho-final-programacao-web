@@ -70,15 +70,29 @@ npm run cy:report  # abre o relatório HTML da última execução (macOS)
 
 ## Relatório
 
-Cada execução gera dois relatórios, configurados com **cypress-multi-reporters**:
+Cada execução gera três relatórios:
 
 - **HTML** (`cypress/reports/index.html`), do **cypress-mochawesome-reporter**: um único arquivo com gráficos e, quando há falha, screenshots embutidos.
 - **JUnit XML** (`cypress/results/*.xml`), do **mocha-junit-reporter**: usado pelo CI para mostrar os resultados no GitHub.
+- **Allure** (`allure-results/`), do **allure-cypress**: no CI, vira um relatório com **histórico por cenário**.
+
+Os dois primeiros saem juntos via **cypress-multi-reporters**. O Allure é um plugin à parte, e o **cypress-on-fix** permite que ele e o Mochawesome usem os mesmos eventos do Cypress sem um sobrescrever o outro.
 
 ## Integração contínua
 
 O workflow `.github/workflows/cypress.yml` roda os testes no Chrome em todo push e pull request. Em seguida, mesmo quando há falha:
 
 - publica cada cenário na aba **Checks** ("Resultados Cypress"), com a mensagem de erro dos que falharam;
-- anexa o relatório HTML como artefato `cypress-report`, guardado por 14 dias.
+- anexa o relatório HTML como artefato `cypress-report`, guardado por 14 dias;
+- na branch principal, gera o **relatório Allure com histórico** e publica no GitHub Pages: `https://carlosrcarletto.github.io/trabalho-final-programacao-web/`.
+
+### Histórico de execuções (Allure)
+
+A cada execução, o relatório anterior é recuperado da branch `gh-pages`, e o novo relatório já inclui as execuções passadas. As últimas 30 ficam guardadas. Lá é possível ver:
+
+- **Trend**, na página inicial: gráfico de quantos cenários passaram ou falharam em cada execução;
+- **History**, na aba de cada cenário: quantas vezes aquele cenário passou ou falhou e o percentual de sucesso;
+- **Flaky**: cenários que alternam entre passar e falhar.
+
+**Configuração única:** depois do primeiro push na branch principal, acesse *Settings → Pages* e, em *Source*, escolha **Deploy from a branch → `gh-pages` / `(root)`**.
 # trabalho-final-programacao-web

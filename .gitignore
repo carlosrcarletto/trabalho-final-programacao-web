@@ -5,3 +5,5 @@ cypress/screenshots/
 cypress/videos/
 cypress/downloads/
 .DS_Store
+allure-results/
+allure-report/
