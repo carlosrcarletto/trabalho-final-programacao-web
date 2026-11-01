@@ -15,6 +15,22 @@
         "15. Clicar no botão 'Continue'": "passed",
         "16. Verificar que 'Logged in as username' está visível": "passed"
       }
+    },
+    {
+      "number": "7",
+      "url": "https://github.com/carlosrcarletto/trabalho-final-programacao-web/actions/runs/41363215877",
+      "date": "2026-11-01T23:42:01.661Z",
+      "results": {
+        "1-2. Launch browser e navegar para a url": "passed",
+        "3. Verificar que a home page está visível": "passed",
+        "4. Clicar no botão 'Signup / Login'": "passed",
+        "5. Verificar que 'New User Signup!' está visível": "passed",
+        "8. Verificar que 'ENTER ACCOUNT INFORMATION' está visível": "passed",
+        "9. Preencher Title, Name, Email, Password e Date of birth": "passed",
+        "10. Marcar o checkbox 'Sign up for our newsletter!'": "passed",
+        "15. Clicar no botão 'Continue'": "passed",
+        "16. Verificar que 'Logged in as username' está visível": "passed"
+      }
     }
   ]
 }
